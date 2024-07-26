@@ -15,12 +15,12 @@ public class LoggingAdvice {
 
     Logger log = LoggerFactory.getLogger(LoggingAdvice.class);
 
-    @Pointcut(value = "execution(* com.vikram.customers.*.*(..) )")
+    @Pointcut(value = "execution(* org.example.address.*.*(..) )")
     public void myPointcut() {
 
     }
 
-    @Pointcut(value = "execution(* com.vikram.customers.*.*(..) )")
+    @Pointcut(value = "execution(* org.example.address.*.*(..) )")
     public void myPointcut123() {
 
     }
