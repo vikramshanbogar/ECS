@@ -26,6 +26,9 @@ public class Customer {
     @Column(name = "address_id")
     Long addressId;
 
+    @Transient
+    Address address;
+
     public Customer() {
 
     }

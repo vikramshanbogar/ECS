@@ -20,6 +20,11 @@ public class CustomersApplication implements CommandLineRunner {
     @Autowired
     CustomerRepo customerRepo;
 
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        // Do any additional configuration here
+        return builder.build();
+    }
 
     @Override
     public void run(String... args) throws Exception {

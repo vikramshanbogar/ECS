@@ -1,13 +1,16 @@
 package com.vikram.customers.Controllers;
 
+import com.vikram.customers.Models.Address;
 import com.vikram.customers.Models.Customer;
 import com.vikram.customers.Services.CustomerService;
 import com.vikram.customers.Utils.Utility;
 import com.vikram.customers.exceptions.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +22,12 @@ public class CustomersController {
     @Autowired
     CustomerService customerService;
 
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Value("${address.url}")
+    String addressServiceURL;
+
     @GetMapping
     List<Customer> getCustomers() {
         return customerService.getAllCustomers();
@@ -28,7 +37,7 @@ public class CustomersController {
     Customer getCustomerById(@PathVariable int id) throws CustomerNotFoundException {
         Optional<Customer> customerOptional = customerService.getCustomerDetails(id);
         if (customerOptional.isPresent())
-           return customerOptional.get();
+            return customerOptional.get();
         else
             throw new CustomerNotFoundException("No Data", null);
     }
@@ -36,9 +45,12 @@ public class CustomersController {
     @GetMapping("/{id}/address")
     Customer getCustomerAddressById(@PathVariable int id) throws CustomerNotFoundException {
         Optional<Customer> customerOptional = customerService.getCustomerDetails(id);
-        if (customerOptional.isPresent())
-            return customerOptional.get();
-        else
+        if (customerOptional.isPresent()) {
+            Customer customer = customerOptional.get();
+            Address address = restTemplate.getForEntity(addressServiceURL + "/" + customerOptional.get().getId(), Address.class).getBody();
+            customer.setAddress(address);
+            return customer;
+        } else
             throw new CustomerNotFoundException("No Data", null);
     }
 
@@ -81,6 +93,7 @@ public class CustomersController {
         }
         return "Data patched successfully";
     }
+
     @RequestMapping(value = "/", method = RequestMethod.OPTIONS)
     ResponseEntity<?> getOptions() {
         return ResponseEntity
